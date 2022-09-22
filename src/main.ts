@@ -36,6 +36,7 @@ import { getParentWindow } from 'helpers/WindowElement';
 import { DatabaseHelperCreationModal } from 'commands/addDatabaseHelper/databaseHelperCreationModal';
 import { generateDbConfiguration, generateNewDatabase } from 'helpers/CommandsHelper';
 import { t } from 'lang/helpers';
+import { ProjectView } from "obsidian-projects-types";
 interface WindowRegistry {
 	viewMap: Map<string, DatabaseView>;
 	viewStateReceivers: Array<(views: DatabaseView[]) => void>;
@@ -105,6 +106,18 @@ export default class DBFolderPlugin extends Plugin {
 		});
 	}
 
+	onRegisterProjectView(view: ProjectView) {
+		const [firstKey] = this.viewMap.keys();
+		const db = this.viewMap.get(firstKey)
+
+		view.setTitle(DB_ICONS.NAME)
+			.setIcon(DB_ICONS.ICON)
+			.setOnOpen((data, contentEl) => {
+				contentEl.appendChild(db.containerEl)
+				db.initDatabase();
+			});
+	}
+
 	unload(): void {
 		Promise.all(
 			app.workspace.getLeavesOfType(DatabaseCore.FRONTMATTER_KEY).map((leaf) => {
@@ -171,7 +184,7 @@ export default class DBFolderPlugin extends Plugin {
 
 	viewStateReceivers: Array<(views: DatabaseView[]) => void> = [];
 
-	addView(view: DatabaseView, data: string) {
+	addView(view: DatabaseView) {
 		const win = view.getWindow();
 		const reg = this.windowRegistry.get(win);
 
