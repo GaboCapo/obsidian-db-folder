@@ -22,6 +22,7 @@ import { t } from "lang/helpers";
 import AppBar from "@mui/material/AppBar";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import ToggleFiltersButton from "./reducers/ToggleFiltersButton";
+import Paper from "@mui/material/Paper";
 
 export function NavBar(navBarProps: NavBarProps) {
   const { table } = navBarProps;
@@ -106,7 +107,11 @@ export function NavBar(navBarProps: NavBarProps) {
           boxShadow: "none",
         }}
       >
-        <Toolbar>
+        <Toolbar
+          style={{
+            minHeight: "2.65rem",
+          }}
+        >
           <IconButton
             size="medium"
             aria-label={t("toolbar_menu_aria_label")}
@@ -114,13 +119,30 @@ export function NavBar(navBarProps: NavBarProps) {
             aria-haspopup="true"
             onClick={handleClick}
             color="inherit"
-            sx={{ mr: 2, maxWidth: 40 }}
+            sx={{
+              mr: 2,
+              maxWidth: 40,
+              marginRight: 1,
+            }}
           >
             <MenuIcon />
           </IconButton>
-
-          {/** Global filter */}
-          <GlobalFilter {...navBarProps.globalFilterRows} />
+          <Paper
+            component="form"
+            sx={{
+              p: "2px 4px",
+              display: "flex",
+              alignItems: "center",
+              scale: 0.7,
+              padding: 0,
+              boxShadow: "none",
+            }}
+          >
+            {/** Global filter */}
+            <GlobalFilter {...navBarProps.globalFilterRows} />
+            <ToggleFiltersButton table={table} />
+            <EditFiltersButton table={table} />
+          </Paper>
           <Box sx={{ flexGrow: 1 }} />
           <Box
             justifyContent={"flex-start"}
@@ -134,8 +156,6 @@ export function NavBar(navBarProps: NavBarProps) {
               size="small"
               key={`ButtonGroup-DataviewFilters`}
             >
-              <ToggleFiltersButton table={table} />
-              <EditFiltersButton table={table} />
               <PaginationTable table={table} />
             </ButtonGroup>
           </Box>
