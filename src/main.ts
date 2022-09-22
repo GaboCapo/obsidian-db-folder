@@ -113,8 +113,9 @@ export default class DBFolderPlugin extends Plugin {
 		view.setTitle(DB_ICONS.NAME)
 			.setIcon(DB_ICONS.ICON)
 			.setOnOpen((data, contentEl) => {
-				contentEl.appendChild(db.containerEl)
-				db.initDatabase();
+				db.initDatabase().then(() => {
+					contentEl.createDiv().appendChild(db.containerEl)
+				})
 			});
 	}
 
