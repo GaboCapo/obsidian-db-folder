@@ -60,7 +60,7 @@
 		"luxon": "3.0.3",
 		"monkey-around": "2.3.0",
 		"obsidian-dataview": "0.5.46",
-		"obsidian-projects-types": "0.2.0",
+		"obsidian-projects-types": "0.3.3",
 		"react": "18.2.0",
 		"react-color": "2.19.3",
 		"react-csv": "2.2.2",

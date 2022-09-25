@@ -36,11 +36,49 @@ import { getParentWindow } from 'helpers/WindowElement';
 import { DatabaseHelperCreationModal } from 'commands/addDatabaseHelper/databaseHelperCreationModal';
 import { generateDbConfiguration, generateNewDatabase } from 'helpers/CommandsHelper';
 import { t } from 'lang/helpers';
-import { ProjectView } from "obsidian-projects-types";
+import { DataFrame, ProjectView, ProjectViewV2 } from "obsidian-projects-types";
 interface WindowRegistry {
 	viewMap: Map<string, DatabaseView>;
 	viewStateReceivers: Array<(views: DatabaseView[]) => void>;
 	appRoot: HTMLElement;
+}
+
+class MySampleView extends ProjectViewV2 {
+	private plugin: DBFolderPlugin;
+	constructor(plugin: DBFolderPlugin) {
+		super();
+		this.plugin = plugin;
+	}
+	dataEl?: HTMLElement;
+
+	getViewType(): string {
+		return "my-sample-view";
+	}
+
+	getDisplayName(): string {
+		return "Sample view";
+	}
+
+	getIcon(): string {
+		return DB_ICONS.NAME;
+	}
+
+	async onData(frame: DataFrame) {
+		// Do nothing here
+	}
+
+	async onOpen() {
+		const [firstKey] = this.plugin.viewMap.keys();
+		const db = this.plugin.viewMap.get(firstKey)
+
+		db.initDatabase().then(() => {
+			this.containerEl.createDiv().appendChild(db.containerEl)
+		})
+	}
+
+	async onClose() {
+		console.log("Closing ", this.getDisplayName());
+	}
 }
 
 export default class DBFolderPlugin extends Plugin {
@@ -64,6 +102,9 @@ export default class DBFolderPlugin extends Plugin {
 	stateManagers: Map<TFile, StateManager> = new Map();
 
 	windowRegistry: Map<Window, WindowRegistry> = new Map();
+
+	onRegisterProjectViewV2 = () => new MySampleView(this);
+
 	async onload(): Promise<void> {
 		await this.load_settings();
 		addIcon(DB_ICONS.NAME, DB_ICONS.ICON);
@@ -104,19 +145,6 @@ export default class DBFolderPlugin extends Plugin {
 		(app.workspace as any).floatingSplit?.children?.forEach((c: any) => {
 			this.mount(c.win);
 		});
-	}
-
-	onRegisterProjectView(view: ProjectView) {
-		const [firstKey] = this.viewMap.keys();
-		const db = this.viewMap.get(firstKey)
-
-		view.setTitle(DB_ICONS.NAME)
-			.setIcon(DB_ICONS.ICON)
-			.setOnOpen((data, contentEl) => {
-				db.initDatabase().then(() => {
-					contentEl.createDiv().appendChild(db.containerEl)
-				})
-			});
 	}
 
 	unload(): void {
