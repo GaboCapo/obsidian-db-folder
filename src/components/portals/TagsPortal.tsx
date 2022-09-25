@@ -13,10 +13,8 @@ const TagsPortal = (tagsProps: CellComponentProps) => {
   const { defaultCell } = tagsProps;
   const { row, column, table } = defaultCell;
   const { tableState } = table.options.meta;
-  const [columnsInfo, columnActions] = tableState.columns((state) => [
-    state.info,
-    state.actions,
-  ]);
+  const columnsInfo = tableState.columns((state) => state.info);
+  const columnActions = tableState.columns((state) => state.actions);
   const dataActions = tableState.data((state) => state.actions);
 
   const tagsRow = tableState.data((state) => state.rows[row.index]);
@@ -102,16 +100,19 @@ const TagsPortal = (tagsProps: CellComponentProps) => {
           isSearchable
           isMulti
           autoFocus
+          openMenuOnFocus
           menuPosition="fixed"
           styles={CustomTagsStyles}
           options={multiOptions}
           onBlur={() => setShowSelectTags(false)}
           onChange={handleOnChange}
           menuPortalTarget={activeDocument.body}
+          className={`react-select-container ${c(
+            "tags-container text-align-center"
+          )}`}
+          classNamePrefix="react-select"
           menuPlacement="auto"
           menuShouldBlockScroll={true}
-          className="react-select-container"
-          classNamePrefix="react-select"
         />
       </div>
     );
@@ -122,9 +123,7 @@ const TagsPortal = (tagsProps: CellComponentProps) => {
         ? TagsForm()
         : tagsState && (
             <div
-              className={
-                c("tags-container") + " cell-padding d-flex flex-wrap-wrap"
-              }
+              className={c("tags-container text-align-center")}
               onClick={() => setShowSelectTags(true)}
               style={{ width: column.getSize() }}
             >
